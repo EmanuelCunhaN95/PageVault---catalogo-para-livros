@@ -1,0 +1,69 @@
+# ==========================================
+# 1. .NET Core / C# (API)
+# ==========================================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Arquivos de usuário e cache do Visual Studio / Rider
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Arquivos de build e publicação
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+out/
+publish/
+
+# Bancos de dados locais (se houver)
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+# ==========================================
+# 2. Node.js / Frontend (Web)
+# ==========================================
+node_modules/
+dist/
+dist-ssr/
+build/
+.next/
+out/
+.vite/
+
+# Logs do Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Arquivos locais de ambiente
+.env
+.env.local
+.env.*.local
+
+# ==========================================
+# 3. Sistema Operacional (SO)
+# ==========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# 4. Editores e Ferramentas
+# ==========================================
+# O VS Code geralmente ignora a pasta .vscode, mas mantém extensões recomendadas
+!.vscode/extensions.json
