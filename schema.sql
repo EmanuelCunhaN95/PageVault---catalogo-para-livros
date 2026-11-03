@@ -51,7 +51,7 @@ CREATE TABLE `livros` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `idioma` varchar(100) NOT NULL,
-  `gênero` varchar(50) DEFAULT NULL,
+  `genero` varchar(50) DEFAULT NULL,
   `status` enum('Quero Ler','Lendo','Lido','Abandonado') NOT NULL DEFAULT 'Quero Ler',
   `nota` decimal(3,1) DEFAULT NULL,
   `autor_id` int(11) DEFAULT NULL
@@ -61,7 +61,7 @@ CREATE TABLE `livros` (
 -- Despejando dados para a tabela `livros`
 --
 
-INSERT INTO `livros` (`id`, `nome`, `idioma`, `gênero`, `status`, `nota`, `autor_id`) VALUES
+INSERT INTO `livros` (`id`, `nome`, `idioma`, `genero`, `status`, `nota`, `autor_id`) VALUES
 (1, 'Dracula', 'Português', 'Romance Gótico', 'Lido', 10.0, 1),
 (2, 'Neuromancer', 'Português', 'Cyberpunk', 'Lido', 9.0, 2),
 (3, 'Count Zero', 'Português', 'Cyberpunk', 'Lido', 7.0, 2),

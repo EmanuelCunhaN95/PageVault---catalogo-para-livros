@@ -67,3 +67,5 @@ Desktop.ini
 # ==========================================
 # O VS Code geralmente ignora a pasta .vscode, mas mantém extensões recomendadas
 !.vscode/extensions.json
+# Ignorar configurações locais com senhas
+appsettings.Development.json
