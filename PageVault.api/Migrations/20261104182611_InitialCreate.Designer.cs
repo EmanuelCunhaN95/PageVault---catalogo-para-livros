@@ -10,7 +10,7 @@ using PageVault.Api.Data;
 namespace PageVault.api.Migrations
 {
     [DbContext(typeof(PageVaultContext))]
-    [Migration("20261103220909_InitialCreate")]
+    [Migration("20261104182611_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
