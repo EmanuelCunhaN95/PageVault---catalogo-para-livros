@@ -1,15 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Adicionamos o useEffect aqui
 import './app.css';
 
-// Dados de exemplo: os mesmos livros que estão no banco `vault`.
-// Quando a API em C# estiver pronta, esta lista passa a vir dela.
-const LIVROS_INICIAIS = [
-  { id: 1, nome: 'Dracula', idioma: 'Português', genero: 'Romance Gótico', status: 'Lido', nota: 10 },
-  { id: 2, nome: 'Neuromancer', idioma: 'Português', genero: 'Cyberpunk', status: 'Lido', nota: 9 },
-  { id: 3, nome: 'Count Zero', idioma: 'Português', genero: 'Cyberpunk', status: 'Lido', nota: 7 },
-  { id: 4, nome: 'Monalisa:Overdrive', idioma: 'Português', genero: 'Cyberpunk', status: 'Lendo', nota: null },
-  { id: 5, nome: 'Meditações', idioma: 'Português', genero: 'Diário', status: 'Quero Ler', nota: null },
-];
+// A constante LIVROS_INICIAIS foi apagada, pois agora os dados vêm da API.
 
 const FORM_VAZIO = {
   nome: '',
@@ -19,36 +11,79 @@ const FORM_VAZIO = {
   nota: '',
 };
 
+// URL da sua API (confirme se a porta é 5052 mesmo)
+const API_URL = 'http://localhost:5052/api/livros';
+
 export default function App() {
-  const [livros, setLivros] = useState(LIVROS_INICIAIS);
+  const [livros, setLivros] = useState([]); // Começa vazio, vai preencher com o banco
   const [mensagem, setMensagem] = useState(null);
   const [formData, setFormData] = useState(FORM_VAZIO);
+  const [carregando, setCarregando] = useState(true); // Para mostrar "Carregando..."
+
+  // 1. BUSCAR OS LIVROS DO BANCO AO CARREGAR A PÁGINA
+  useEffect(() => {
+    const buscarLivros = async () => {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Erro ao buscar livros');
+        
+        const data = await response.json();
+        setLivros(data);
+      } catch (error) {
+        console.error(error);
+        setMensagem({ tipo: 'erro', texto: 'FALHA NA CONEXÃO COM A MATRIZ (API).' });
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscarLivros();
+  }, []); // O array vazio [] significa "rode apenas uma vez ao montar a tela"
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Adiciona o livro na lista local (ainda sem banco de dados)
-  const handleSubmit = (e) => {
+  // 2. ENVIAR O NOVO LIVRO PARA O BANCO
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Imita o AUTO_INCREMENT do banco: o próximo id é o maior atual + 1
-    const proximoId = livros.length > 0 ? Math.max(...livros.map((l) => l.id)) + 1 : 1;
-
-    const novoLivro = {
-      id: proximoId,
+    const novoLivroParaAPI = {
       nome: formData.nome.trim(),
       idioma: formData.idioma.trim(),
-      genero: formData.genero.trim() || null, // gênero é opcional, como no banco
+      genero: formData.genero.trim() || null,
       status: formData.status,
       nota: formData.nota !== '' ? parseFloat(formData.nota) : null,
+      autorId: 1 // Temporário: estamos fixando o Autor 1 (Bram Stoker) para funcionar
     };
 
-    setLivros((anteriores) => [...anteriores, novoLivro]);
-    setFormData(FORM_VAZIO);
-    setMensagem({ tipo: 'sucesso', texto: 'DADO ARQUIVADO COM SUCESSO NO TERMINAL.' });
-    setTimeout(() => setMensagem(null), 3000);
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(novoLivroParaAPI),
+      });
+
+      if (!response.ok) throw new Error('Erro ao salvar livro');
+
+      // A API devolve o livro salvo com o ID novo gerado pelo banco
+      const livroSalvo = await response.json();
+
+      // Atualiza a lista na tela sem precisar recarregar a página
+      setLivros((anteriores) => [...anteriores, livroSalvo]);
+      
+      setFormData(FORM_VAZIO);
+      setMensagem({ tipo: 'sucesso', texto: 'DADO ARQUIVADO COM SUCESSO NO BANCO DE DADOS.' });
+      setTimeout(() => setMensagem(null), 3000);
+
+    } catch (error) {
+      console.error(error);
+      setMensagem({ tipo: 'erro', texto: 'FALHA AO GRAVAR NO BANCO DE DADOS.' });
+      setTimeout(() => setMensagem(null), 3000);
+    }
   };
 
   return (
@@ -164,7 +199,11 @@ export default function App() {
           </div>
 
           <div className="book-log-list">
-            {livros.length === 0 && (
+            {carregando && (
+              <div className="empty-text">&gt; SINCRONIZANDO COM A MATRIZ...</div>
+            )}
+
+            {!carregando && livros.length === 0 && (
               <div className="empty-text">&gt; NENHUM MANUSCRITO LOCALIZADO NA MATRIZ.</div>
             )}
 
