@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PageVault.Api.Data;
+using System.Text.Json.Serialization; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,11 @@ builder.Services.AddDbContext<PageVaultContext>(options =>
 
 // 2. Configuração dos Controllers (e aquele log de erros que fizemos)
 builder.Services.AddControllers()
+ .AddJsonOptions(options =>
+    {
+        // Diz ao serializador para ignorar referências circulares
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    })
     .ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
@@ -33,7 +39,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirReact", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Confirme a porta do seu React
+        policy.WithOrigins("http://localhost:5173") // Porta do React
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

@@ -20,7 +20,8 @@ public class LivrosController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Livro>>> GetLivros()
     {
-        return await _context.Livros.ToListAsync();
+        // O Include(l => l.Autor) faz um JOIN com a tabela de autores
+        return await _context.Livros.Include(l => l.Autor).ToListAsync();
     }
 
     // 2. GET: api/livros/5 (Buscar um livro específico pelo ID)
